@@ -153,7 +153,6 @@ patch_roblox() {
     fi
 
     mv "/Applications/Roblox.app/Contents/MacOS/RobloxPlayer_patched" "/Applications/Roblox.app/Contents/MacOS/RobloxPlayer"
-    rm -r "/Applications/Roblox.app/Contents/MacOS/RobloxPlayerInstaller.app"
 }
 
 install_macsploit() {
@@ -182,7 +181,11 @@ clean_up() {
 
     rm ./jq
     rm ./insert_dylib
-    echo -e "Done."
+    rm -r "/Applications/Roblox.app/Contents/MacOS/Roblox.app"
+    rm -r "/Applications/Roblox.app/Contents/MacOS/RobloxPlayerInstaller.app"
+
+    center '✨ \033[1;32mInstallation Complete!\033[0m'
+    echo ""
 }
 
 center() {
