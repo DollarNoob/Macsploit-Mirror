@@ -101,7 +101,7 @@ check_permissions() {
 
 check_version() {
     if [ $architecture == "arm64" ]; then
-        curl "$base_url/jq-macos-arm64" -o "./jq"
+        curl -s "$base_url/jq-macos-arm64" -o "./jq"
     else
         curl -s "$base_url/jq-macos-amd64" -o "./jq"
     fi
