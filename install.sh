@@ -143,6 +143,7 @@ patch_roblox() {
     center "⚙️  \033[1;35mPatching RobloxPlayer...\033[0m"
     mv ./macsploit.dylib "/Applications/Roblox.app/Contents/MacOS/macsploit.dylib"
 
+    chmod +x ./insert_dylib
     local output=$(./insert_dylib "/Applications/Roblox.app/Contents/MacOS/macsploit.dylib" "/Applications/Roblox.app/Contents/MacOS/RobloxPlayer" --strip-codesig --all-yes)
     if [[ "$output" != "Added LC_LOAD_DYLIB to /Applications/Roblox.app/Contents/MacOS/RobloxPlayer_patched" ]]; then
         center "\033[31mTerminal was unable to patch RobloxPlayer.\033[0m"
