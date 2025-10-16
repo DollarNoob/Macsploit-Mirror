@@ -18,16 +18,13 @@ print_title() {
 
 check_requirements() {
     local os_version=$(sw_vers -productVersion)
-    local architecture=$(uname -m)
+    architecture=$(uname -m)
     if [ "$(echo "$os_version" | cut -d. -f1)" -ge 11 ]; then
         if [ $architecture == "arm64" ]; then
-            curl -s "$base_url/jq-macos-arm64" -o "./jq"
             center "✅ \033[1;36mmacOS $os_version\033[0m (Apple Silicon)"
         else
-            curl -s "$base_url/jq-macos-amd64" -o "./jq"
             center "✅ \033[1;36mmacOS $os_version\033[0m (Intel)"
         fi
-        chmod +x ./jq
         echo ""
         center "============================================================"
         echo ""
@@ -45,6 +42,14 @@ check_requirements() {
 }
 
 check_permissions() {
+    if [[ ! -w ~/ ]]; then
+        center "\033[31mTerminal is unable to access your Home folder.\033[0m"
+        center "\033[31mPlease input your password to run the installer with sudo permissions.\033[0m"
+        echo ""
+        exec curl -s "$base_url/install.sh" | sudo bash
+        exit
+    fi
+
     if [[ ! -w ~/Downloads ]]; then
         center "\033[31mTerminal is unable to access your Downloads folder.\033[0m"
         center "\033[31mPlease grant Full Disk Access to Terminal and try again.\033[0m"
@@ -56,8 +61,9 @@ check_permissions() {
     if [[ -d "/Applications/Roblox.app" ]]; then
         if find "/Applications/Roblox.app" ! -exec test -w {} \; -print -quit | grep -q .; then
             center "\033[31mTerminal is unable to access your current Roblox installation.\033[0m"
-            center "\033[31mPlease run the installer with sudo permissions.\033[0m"
+            center "\033[31mPlease input your password to run the installer with sudo permissions.\033[0m"
             echo ""
+            exec curl -s "$base_url/install.sh" | sudo bash
             exit
         fi
     fi
@@ -65,8 +71,9 @@ check_permissions() {
     if [[ -d "./Applications/Roblox.app" ]]; then
         if find "./Applications/Roblox.app" ! -exec test -w {} \; -print -quit | grep -q .; then
             center "\033[31mTerminal is unable to access your current Roblox installation.\033[0m"
-            center "\033[31mPlease run the installer with sudo permissions.\033[0m"
+            center "\033[31mPlease input your password to run the installer with sudo permissions.\033[0m"
             echo ""
+            exec curl -s "$base_url/install.sh" | sudo bash
             exit
         fi
     fi
@@ -74,8 +81,9 @@ check_permissions() {
     if [[ -d "/Applications/MacSploit.app" ]]; then
         if find "/Applications/MacSploit.app" ! -exec test -w {} \; -print -quit | grep -q .; then
             center "\033[31mTerminal is unable to access your current MacSploit installation.\033[0m"
-            center "\033[31mPlease run the installer with sudo permissions.\033[0m"
+            center "\033[31mPlease input your password to run the installer with sudo permissions.\033[0m"
             echo ""
+            exec curl -s "$base_url/install.sh" | sudo bash
             exit
         fi
     fi
@@ -83,14 +91,22 @@ check_permissions() {
     if [[ -d "./Applications/MacSploit.app" ]]; then
         if find "./Applications/MacSploit.app" ! -exec test -w {} \; -print -quit | grep -q .; then
             center "\033[31mTerminal is unable to access your current MacSploit installation.\033[0m"
-            center "\033[31mPlease run the installer with sudo permissions.\033[0m"
+            center "\033[31mPlease input your password to run the installer with sudo permissions.\033[0m"
             echo ""
+            exec curl -s "$base_url/install.sh" | sudo bash
             exit
         fi
     fi
 }
 
 check_version() {
+    if [ $architecture == "arm64" ]; then
+        curl "$base_url/jq-macos-arm64" -o "./jq"
+    else
+        curl -s "$base_url/jq-macos-amd64" -o "./jq"
+    fi
+    chmod +x ./jq
+
     roblox_version_info=$(curl -s "https://clientsettingscdn.roblox.com/v2/client-version/MacPlayer")
     roblox_version=$(echo $roblox_version_info | ./jq -r ".clientVersionUpload")
     center "✅ \033[1;34mRoblox\033[0m | $roblox_version"
