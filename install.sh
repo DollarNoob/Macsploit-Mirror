@@ -1,5 +1,6 @@
 #!/bin/bash
 
+cd ~/
 base_url="https://raw.githubusercontent.com/DollarNoob/Macsploit-Mirror/main"
 
 print_title() {
