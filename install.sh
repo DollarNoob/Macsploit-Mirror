@@ -26,9 +26,9 @@ check_requirements() {
         else
             center "✅ \033[1;36mmacOS $os_version\033[0m (Intel)"
         fi
-        echo ""
+        echo
         center "============================================================"
-        echo ""
+        echo
     else
         if [ $architecture == "arm64" ]; then
             center "❌ \033[1;31mmacOS $os_version\033[0m (Apple Silicon)"
@@ -37,7 +37,7 @@ check_requirements() {
         fi
         center "\033[31mYour device is not compatible with MacSploit.\033[0m"
         center "\033[31mPlease upgrade to macOS 11.0+ if possible.\033[0m"
-        echo ""
+        echo
         exit
     fi
 }
@@ -46,7 +46,7 @@ check_permissions() {
     if [[ ! -w ~/ ]]; then
         center "\033[31mTerminal is unable to access your Home folder.\033[0m"
         center "\033[31mPlease input your password to run the installer with sudo permissions.\033[0m"
-        echo ""
+        echo
         sudo -E bash -c "$(curl -s "$base_url/install.sh")"
         exit
     fi
@@ -54,7 +54,7 @@ check_permissions() {
     if [[ ! -w ~/Downloads ]]; then
         center "\033[31mTerminal is unable to access your Downloads folder.\033[0m"
         center "\033[31mPlease grant Full Disk Access to Terminal and try again.\033[0m"
-        echo ""
+        echo
         open "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
         exit
     fi
@@ -63,7 +63,7 @@ check_permissions() {
         if find "/Applications/Roblox.app" ! -exec test -w {} \; -print -quit | grep -q .; then
             center "\033[31mTerminal is unable to access your current Roblox installation.\033[0m"
             center "\033[31mPlease input your password to run the installer with sudo permissions.\033[0m"
-            echo ""
+            echo
             sudo -E bash -c "$(curl -s "$base_url/install.sh")"
             exit
         fi
@@ -73,7 +73,7 @@ check_permissions() {
         if find "./Applications/Roblox.app" ! -exec test -w {} \; -print -quit | grep -q .; then
             center "\033[31mTerminal is unable to access your current Roblox installation.\033[0m"
             center "\033[31mPlease input your password to run the installer with sudo permissions.\033[0m"
-            echo ""
+            echo
             sudo -E bash -c "$(curl -s "$base_url/install.sh")"
             exit
         fi
@@ -83,7 +83,7 @@ check_permissions() {
         if find "/Applications/MacSploit.app" ! -exec test -w {} \; -print -quit | grep -q .; then
             center "\033[31mTerminal is unable to access your current MacSploit installation.\033[0m"
             center "\033[31mPlease input your password to run the installer with sudo permissions.\033[0m"
-            echo ""
+            echo
             sudo -E bash -c "$(curl -s "$base_url/install.sh")"
             exit
         fi
@@ -93,10 +93,30 @@ check_permissions() {
         if find "./Applications/MacSploit.app" ! -exec test -w {} \; -print -quit | grep -q .; then
             center "\033[31mTerminal is unable to access your current MacSploit installation.\033[0m"
             center "\033[31mPlease input your password to run the installer with sudo permissions.\033[0m"
-            echo ""
+            echo
             sudo -E bash -c "$(curl -s "$base_url/install.sh")"
             exit
         fi
+    fi
+
+    if ! /usr/bin/pgrep -q oahd; then
+        center "\033[31mRosetta is not installed on your system.\033[0m"
+        center "\033[31mThis is required since MacSploit runs on top of Rosetta.\033[0m"
+        echo
+        center "Do you want to install Rosetta? (Y/N): \c"
+        while read -n 1 -s -r answer; do
+            if [[ "$answer" =~ ^[Yy]$ ]]; then
+                echo
+                echo
+                softwareupdate --install-rosetta --agree-to-license
+                bash -c "$(curl -s "$base_url/install.sh")"
+                exit
+            elif [[ "$answer" =~ ^[Nn]$ ]]; then
+                echo
+                echo
+                exit
+            fi
+        done
     fi
 }
 
@@ -123,13 +143,14 @@ check_version() {
         center "\033[33mMacSploit is not updated to the latest version of Roblox.\033[0m"
         center "\033[33mThis does not mean MacSploit would not work at all.\033[0m"
         center "\033[33mThanks to update hooks, MacSploit may still function for a few days.\033[0m"
-        echo ""
+        echo
         center "Do you want to proceed? (Y/N): \c"
         while read -n 1 -s -r answer; do
             if [[ "$answer" =~ ^[Yy]$ ]]; then
                 break
             elif [[ "$answer" =~ ^[Nn]$ ]]; then
-                echo -e "\n"
+                echo
+                echo
                 exit
             fi
         done
@@ -139,9 +160,9 @@ check_version() {
 install_roblox() {
     print_title
     center "📥 \033[1;34mDownloading RobloxPlayer...\033[0m"
-    echo ""
+    echo
     curl -# "https://setup.rbxcdn.com/mac/$version-RobloxPlayer.zip" -o "./RobloxPlayer.zip"
-    echo ""
+    echo
 
     center "⚙️  \033[1;34mInstalling RobloxPlayer...\033[0m"
     [ -d "/Applications/Roblox.app" ] && rm -rf "/Applications/Roblox.app"
@@ -155,10 +176,10 @@ install_roblox() {
 patch_roblox() {
     print_title
     center "📥 \033[1;35mDownloading MacSploit DYLIB...\033[0m"
-    echo ""
+    echo
     curl -#O "$base_url/macsploit.dylib"
     curl -#O "$base_url/insert_dylib"
-    echo ""
+    echo
 
     center "⚙️  \033[1;35mPatching RobloxPlayer...\033[0m"
     mv ./macsploit.dylib "/Applications/Roblox.app/Contents/MacOS/macsploit.dylib"
@@ -169,7 +190,7 @@ patch_roblox() {
         center "\033[31mTerminal was unable to patch RobloxPlayer.\033[0m"
         center "\033[31mThis is usually caused by anti-virus softwares.\033[0m"
         center "\033[31mIf you have one running, please disable it and try again.\033[0m"
-        echo ""
+        echo
         exit
     fi
 
@@ -179,9 +200,9 @@ patch_roblox() {
 install_macsploit() {
     print_title
     center "📥 \033[1;35mDownloading MacSploit...\033[0m"
-    echo ""
+    echo
     curl -#O "$base_url/MacSploit.zip"
-    echo ""
+    echo
 
     center "⚙️  \033[1;35mInstalling MacSploit...\033[0m"
     [ -d "/Applications/MacSploit.app" ] && rm -rf "/Applications/MacSploit.app"
@@ -195,7 +216,7 @@ install_macsploit() {
 clean_up() {
     print_title
     center "🧹 \033[1;36mCleaning Up...\033[0m"
-    echo ""
+    echo
 
     touch ~/Downloads/ms-version.json
     echo $version_info > ~/Downloads/ms-version.json
@@ -205,8 +226,15 @@ clean_up() {
     rm -r "/Applications/Roblox.app/Contents/MacOS/Roblox.app"
     rm -r "/Applications/Roblox.app/Contents/MacOS/RobloxPlayerInstaller.app"
 
+    # Check if user is running on sudo permissions
+    sudo -n true >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        # Create required folder (without this Roblox would crash due to lack of permissions)
+        sudo mkdir /Applications/Roblox.app/Contents/Resources/content/custom
+    fi
+
     center '✨ \033[1;32mInstallation Complete!\033[0m'
-    echo ""
+    echo
 }
 
 center() {
