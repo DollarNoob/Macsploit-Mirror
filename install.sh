@@ -46,7 +46,7 @@ check_permissions() {
         center "\033[31mTerminal is unable to access your Home folder.\033[0m"
         center "\033[31mPlease input your password to run the installer with sudo permissions.\033[0m"
         echo ""
-        exec curl -s "$base_url/install.sh" | sudo bash
+        sudo -E bash -c "$(curl -s "$base_url/install.sh")"
         exit
     fi
 
@@ -63,7 +63,7 @@ check_permissions() {
             center "\033[31mTerminal is unable to access your current Roblox installation.\033[0m"
             center "\033[31mPlease input your password to run the installer with sudo permissions.\033[0m"
             echo ""
-            exec curl -s "$base_url/install.sh" | sudo bash
+            sudo -E bash -c "$(curl -s "$base_url/install.sh")"
             exit
         fi
     fi
@@ -73,7 +73,7 @@ check_permissions() {
             center "\033[31mTerminal is unable to access your current Roblox installation.\033[0m"
             center "\033[31mPlease input your password to run the installer with sudo permissions.\033[0m"
             echo ""
-            exec curl -s "$base_url/install.sh" | sudo bash
+            sudo -E bash -c "$(curl -s "$base_url/install.sh")"
             exit
         fi
     fi
@@ -83,7 +83,7 @@ check_permissions() {
             center "\033[31mTerminal is unable to access your current MacSploit installation.\033[0m"
             center "\033[31mPlease input your password to run the installer with sudo permissions.\033[0m"
             echo ""
-            exec curl -s "$base_url/install.sh" | sudo bash
+            sudo -E bash -c "$(curl -s "$base_url/install.sh")"
             exit
         fi
     fi
@@ -93,7 +93,7 @@ check_permissions() {
             center "\033[31mTerminal is unable to access your current MacSploit installation.\033[0m"
             center "\033[31mPlease input your password to run the installer with sudo permissions.\033[0m"
             echo ""
-            exec curl -s "$base_url/install.sh" | sudo bash
+            sudo -E bash -c "$(curl -s "$base_url/install.sh")"
             exit
         fi
     fi
