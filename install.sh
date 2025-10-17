@@ -123,12 +123,15 @@ check_version() {
         center "\033[33mThis does not mean MacSploit would not work at all.\033[0m"
         center "\033[33mThanks to update hooks, MacSploit may still function for a few days.\033[0m"
         echo ""
-        center "Do you want to proceed? (Y/N)"
-        read -n 1 -r answer
-        if [[ ! "$answer" =~ ^[Yy]$ ]]; then
-            echo -e "\n"
-            exit
-        fi
+        center "Do you want to proceed? (Y/N): \c"
+        while read -n 1 -s -r answer; do
+            if [[ "$answer" =~ ^[Yy]$ ]]; then
+                break
+            elif [[ "$answer" =~ ^[Nn]$ ]]; then
+                echo -e "\n"
+                exit
+            fi
+        done
     fi
 }
 
