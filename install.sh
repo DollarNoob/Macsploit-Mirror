@@ -43,7 +43,7 @@ check_requirements() {
 }
 
 check_permissions() {
-    if [[ ! -w ~/ ]]; then
+    if [[ ! -w . || ! -x . ]]; then
         center "\033[31mTerminal is unable to access your Home folder.\033[0m"
         center "\033[31mPlease input your password to run the installer with sudo permissions.\033[0m"
         echo
@@ -51,7 +51,7 @@ check_permissions() {
         exit
     fi
 
-    if [[ ! -w ~/Downloads ]]; then
+    if [[ ! -w ./Downloads || ! -x ./Downloads ]]; then
         center "\033[31mTerminal is unable to access your Downloads folder.\033[0m"
         center "\033[31mPlease grant Full Disk Access to Terminal and try again.\033[0m"
         echo
@@ -218,8 +218,14 @@ clean_up() {
     center "🧹 \033[1;36mCleaning Up...\033[0m"
     echo
 
-    touch ~/Downloads/ms-version.json
-    echo $version_info > ~/Downloads/ms-version.json
+    if touch ./Downloads/ms-version.json 2>&1 | grep -q "Operation not permitted"; then
+        center "\033[31mTerminal is unable to access your Downloads folder.\033[0m"
+        center "\033[31mPlease grant Full Disk Access to Terminal and try again.\033[0m"
+        echo
+        open "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
+        exit
+    fi
+    echo $version_info > ./Downloads/ms-version.json
 
     rm ./jq
     rm ./insert_dylib
