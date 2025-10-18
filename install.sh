@@ -99,7 +99,7 @@ check_permissions() {
         fi
     fi
 
-    if ! /usr/bin/pgrep -q oahd; then
+    if [ "$architecture" == "arm64" ] && ! /usr/bin/pgrep -q oahd; then
         center "\033[31mRosetta is not installed on your system.\033[0m"
         center "\033[31mThis is required since MacSploit runs on top of Rosetta.\033[0m"
         echo
