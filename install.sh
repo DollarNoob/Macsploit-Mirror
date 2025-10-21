@@ -59,6 +59,14 @@ check_permissions() {
         exit
     fi
 
+    if [[ ! -w /Applications || ! -x /Applications ]]; then
+        center "\033[31mTerminal is unable to access your Applications folder.\033[0m"
+        center "\033[31mPlease input your password to run the installer with sudo permissions.\033[0m"
+        echo
+        sudo -E bash -c "$(curl -s "$base_url/install.sh")"
+        exit
+    fi
+
     if [[ -d "/Applications/Roblox.app" ]]; then
         if find "/Applications/Roblox.app" ! -exec test -w {} \; -print -quit | grep -q .; then
             center "\033[31mTerminal is unable to access your current Roblox installation.\033[0m"
