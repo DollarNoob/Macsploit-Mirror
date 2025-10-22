@@ -1,8 +1,8 @@
 {
-    "clientVersionUpload": "version-707cf2ddcf024b32",
-    "appVersion": "najlc9238",
-    "clientVersion": "undetected-1",
-    "relVersion": "1.9.5",
+    "clientVersionUpload": "version-e0126463331444db",
+    "appVersion": "native-1",
+    "clientVersion": "native-1",
+    "relVersion": "1.9.6",
     "channel": "live",
-    "changelog": "100% sunc + undetected execution"
+    "changelog": "100% sunc + undetected execution + native injection"
 }

@@ -169,7 +169,11 @@ install_roblox() {
     print_title
     center "📥 \033[1;34mDownloading RobloxPlayer...\033[0m"
     echo
-    curl -# "https://setup.rbxcdn.com/mac/$version-RobloxPlayer.zip" -o "./RobloxPlayer.zip"
+    if [ $architecture == "arm64" ]; then
+        curl -# "https://setup.rbxcdn.com/mac/arm64/$version-RobloxPlayer.zip" -o "./RobloxPlayer.zip"
+    else
+        curl -# "https://setup.rbxcdn.com/mac/$version-RobloxPlayer.zip" -o "./RobloxPlayer.zip"
+    fi
     echo
 
     center "⚙️  \033[1;34mInstalling RobloxPlayer...\033[0m"
@@ -185,11 +189,19 @@ patch_roblox() {
     print_title
     center "📥 \033[1;35mDownloading MacSploit DYLIB...\033[0m"
     echo
-    curl -#O "$base_url/macsploit.dylib"
+    if [ $architecture == "arm64" ]; then
+        curl -# "$base_url/macsploit_arm64.dylib" -o "./macsploit.dylib"
+    else
+        curl -# "$base_url/macsploit_x86_64.dylib" -o "./macsploit.dylib"
+    fi
     curl -#O "$base_url/insert_dylib"
     echo
 
     center "⚙️  \033[1;35mPatching RobloxPlayer...\033[0m"
+    if [ $architecture == "arm64" ]; then
+        codesign --remove-signature /Applications/Roblox.app
+    fi
+
     mv ./macsploit.dylib "/Applications/Roblox.app/Contents/MacOS/macsploit.dylib"
 
     chmod +x ./insert_dylib
@@ -200,6 +212,12 @@ patch_roblox() {
         center "\033[31mIf you have one running, please disable it and try again.\033[0m"
         echo
         exit
+    fi
+
+    if [ $architecture == "arm64" ]; then
+        echo
+        center "🖊️  \033[1;36mSigning RobloxPlayer...\033[0m"
+        codesign -s "-" /Applications/Roblox.app
     fi
 
     mv "/Applications/Roblox.app/Contents/MacOS/RobloxPlayer_patched" "/Applications/Roblox.app/Contents/MacOS/RobloxPlayer"
