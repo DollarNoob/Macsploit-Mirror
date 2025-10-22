@@ -214,13 +214,13 @@ patch_roblox() {
         exit
     fi
 
+    mv "/Applications/Roblox.app/Contents/MacOS/RobloxPlayer_patched" "/Applications/Roblox.app/Contents/MacOS/RobloxPlayer"
+
     if [ $architecture == "arm64" ]; then
         echo
         center "🖊️  \033[1;36mSigning RobloxPlayer...\033[0m"
         codesign -s "-" /Applications/Roblox.app
     fi
-
-    mv "/Applications/Roblox.app/Contents/MacOS/RobloxPlayer_patched" "/Applications/Roblox.app/Contents/MacOS/RobloxPlayer"
 }
 
 install_macsploit() {
