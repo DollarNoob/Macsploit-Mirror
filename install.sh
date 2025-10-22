@@ -145,7 +145,6 @@ check_version() {
 
     if [ "$version" == "$roblox_version" ]; then
         center "✅ \033[1;35mMacSploit\033[0m | $version"
-        sleep 1
     else
         center "❗ \033[1;35mMacSploit\033[0m | \033[33m$version\033[0m"
         center "\033[33mMacSploit is not updated to the latest version of Roblox.\033[0m"
@@ -163,6 +162,8 @@ check_version() {
             fi
         done
     fi
+
+    sleep 1
 }
 
 install_roblox() {
@@ -183,6 +184,8 @@ install_roblox() {
     unzip -o -q "./RobloxPlayer.zip"
     mv ./RobloxPlayer.app /Applications/Roblox.app
     rm ./RobloxPlayer.zip
+
+    sleep 1
 }
 
 patch_roblox() {
@@ -205,8 +208,8 @@ patch_roblox() {
     mv ./macsploit.dylib "/Applications/Roblox.app/Contents/MacOS/macsploit.dylib"
 
     chmod +x ./insert_dylib
-    local output=$(./insert_dylib "/Applications/Roblox.app/Contents/MacOS/macsploit.dylib" "/Applications/Roblox.app/Contents/MacOS/RobloxPlayer" --strip-codesig --all-yes)
-    if [[ "$output" != "Added LC_LOAD_DYLIB to /Applications/Roblox.app/Contents/MacOS/RobloxPlayer_patched" ]]; then
+    local output=$(./insert_dylib "/Applications/Roblox.app/Contents/MacOS/macsploit.dylib" "/Applications/Roblox.app/Contents/MacOS/RobloxPlayer" "/Applications/Roblox.app/Contents/MacOS/RobloxPlayer" --overwrite --strip-codesig --all-yes)
+    if [[ "$output" != "Added LC_LOAD_DYLIB to /Applications/Roblox.app/Contents/MacOS/RobloxPlayer" ]]; then
         center "\033[31mTerminal was unable to patch RobloxPlayer.\033[0m"
         center "\033[31mThis is usually caused by anti-virus softwares.\033[0m"
         center "\033[31mIf you have one running, please disable it and try again.\033[0m"
@@ -214,13 +217,13 @@ patch_roblox() {
         exit
     fi
 
-    mv "/Applications/Roblox.app/Contents/MacOS/RobloxPlayer_patched" "/Applications/Roblox.app/Contents/MacOS/RobloxPlayer"
-
     if [ $architecture == "arm64" ]; then
         echo
         center "🖊️  \033[1;36mSigning RobloxPlayer...\033[0m"
         codesign -s "-" /Applications/Roblox.app
     fi
+
+    sleep 1
 }
 
 install_macsploit() {
@@ -237,6 +240,8 @@ install_macsploit() {
     unzip -o -q "./MacSploit.zip"
     mv ./MacSploit.app /Applications/MacSploit.app
     rm ./MacSploit.zip
+
+    sleep 1
 }
 
 clean_up() {
