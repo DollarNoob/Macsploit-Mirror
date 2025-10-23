@@ -1,7 +1,7 @@
 {
     "clientVersionUpload": "version-e0126463331444db",
-    "appVersion": "native-1",
-    "clientVersion": "native-1",
+    "appVersion": "native-2",
+    "clientVersion": "native-2",
     "relVersion": "1.9.6",
     "channel": "live",
     "changelog": "100% sunc + undetected execution + native injection"
