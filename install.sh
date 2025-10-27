@@ -260,10 +260,10 @@ clean_up() {
         center "\033[31mTerminal is unable to access your Downloads folder.\033[0m"
         center "\033[31mPlease input your password to run the installer with sudo permissions.\033[0m"
         echo
-        sudo -E bash -c "$(curl -s "$base_url/install.sh")"
-        exit
+        sudo echo $version_info > ./Downloads/ms-version.json
+    else
+        echo $version_info > ./Downloads/ms-version.json
     fi
-    echo $version_info > ./Downloads/ms-version.json
 
     rm ./jq
     rm ./insert_dylib
