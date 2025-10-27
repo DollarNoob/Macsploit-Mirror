@@ -249,11 +249,18 @@ clean_up() {
     center "🧹 \033[1;36mCleaning Up...\033[0m"
     echo
 
-    if touch ./Downloads/ms-version.json 2>&1 | grep -q "Operation not permitted"; then
+    local error=$(touch ./Downloads/ms-version.json 2>&1)
+    if echo "$error" | grep -q "Operation not permitted"; then
         center "\033[31mTerminal is unable to access your Downloads folder.\033[0m"
         center "\033[31mPlease grant Full Disk Access to Terminal and try again.\033[0m"
         echo
         open "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
+        exit
+    elif echo "$error" | grep -q "Permission denied"; then
+        center "\033[31mTerminal is unable to access your Downloads folder.\033[0m"
+        center "\033[31mPlease input your password to run the installer with sudo permissions.\033[0m"
+        echo
+        sudo -E bash -c "$(curl -s "$base_url/install.sh")"
         exit
     fi
     echo $version_info > ./Downloads/ms-version.json
