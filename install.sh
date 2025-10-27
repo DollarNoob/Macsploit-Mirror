@@ -260,6 +260,7 @@ clean_up() {
         center "\033[31mTerminal is unable to access your Downloads folder.\033[0m"
         center "\033[31mPlease input your password to run the installer with sudo permissions.\033[0m"
         echo
+        sudo touch ./Downloads/ms-version.json
         sudo echo $version_info > ./Downloads/ms-version.json
     else
         echo $version_info > ./Downloads/ms-version.json
