@@ -181,7 +181,7 @@ install_roblox() {
     [ -d "/Applications/Roblox.app" ] && rm -rf "/Applications/Roblox.app"
     [ -d "./Applications/Roblox.app" ] && rm -rf "./Applications/Roblox.app"
 
-    unzip -o -q "./RobloxPlayer.zip"
+    /usr/bin/unzip -o -q "./RobloxPlayer.zip"
     mv ./RobloxPlayer.app /Applications/Roblox.app
     rm ./RobloxPlayer.zip
 
@@ -237,7 +237,7 @@ install_macsploit() {
     [ -d "/Applications/MacSploit.app" ] && rm -rf "/Applications/MacSploit.app"
     [ -d "./Applications/MacSploit.app" ] && rm -rf "./Applications/MacSploit.app"
 
-    unzip -o -q "./MacSploit.zip"
+    /usr/bin/unzip -o -q "./MacSploit.zip"
     mv ./MacSploit.app /Applications/MacSploit.app
     rm ./MacSploit.zip
 
