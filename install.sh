@@ -157,6 +157,7 @@ check_version() {
 
     if [ "$version" == "$roblox_version" ]; then
         center "✅ \033[1;35mMacSploit\033[0m | $version"
+        sleep 1
     else
         center "❗ \033[1;35mMacSploit\033[0m | \033[33m$version\033[0m"
         center "\033[33mMacSploit is not updated to the latest version of Roblox.\033[0m"
@@ -174,8 +175,6 @@ check_version() {
             fi
         done
     fi
-
-    sleep 1
 }
 
 install_roblox() {
@@ -274,10 +273,10 @@ clean_up() {
         echo $version_info > ./Downloads/ms-version.json
     fi
 
-    rm ./jq
-    rm ./insert_dylib
-    rm -r "/Applications/Roblox.app/Contents/MacOS/Roblox.app"
-    rm -r "/Applications/Roblox.app/Contents/MacOS/RobloxPlayerInstaller.app"
+    rm -f ./jq
+    rm -f ./insert_dylib
+    rm -rf "/Applications/Roblox.app/Contents/MacOS/Roblox.app"
+    rm -rf "/Applications/Roblox.app/Contents/MacOS/RobloxPlayerInstaller.app"
 
     # Check if user is running on sudo permissions
     sudo -n true >/dev/null 2>&1
