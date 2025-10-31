@@ -20,7 +20,7 @@ check_requirements() {
     local os_version=$(sw_vers -productVersion)
     architecture=$(uname -m)
     if [ "$(echo "$os_version" | cut -d. -f1)" -ge 11 ]; then
-        if [ $architecture == "arm64" ]; then
+        if [ "$architecture" == "arm64" ]; then
             center "✅ \033[1;36mmacOS $os_version\033[0m (Apple Silicon)"
         else
             center "✅ \033[1;36mmacOS $os_version\033[0m (Intel)"
@@ -29,7 +29,7 @@ check_requirements() {
         center "============================================================"
         echo
     else
-        if [ $architecture == "arm64" ]; then
+        if [ "$architecture" == "arm64" ]; then
             center "❌ \033[1;31mmacOS $os_version\033[0m (Apple Silicon)"
         else
             center "❌ \033[1;31mmacOS $os_version\033[0m (Intel)"
@@ -66,6 +66,7 @@ check_permissions() {
         exit
     fi
 
+    local deleted=false
     if [[ -d "/Applications/Roblox.app" ]]; then
         local error=$(rm -rf "/Applications/Roblox.app" 2>&1)
         if echo "$error" | grep -q "Permission denied"; then
@@ -76,6 +77,7 @@ check_permissions() {
             exit
         else
             center "\033[37mDeleted existing Roblox installation.\033[0m"
+            deleted=true
         fi
     fi
 
@@ -89,6 +91,7 @@ check_permissions() {
             exit
         else
             center "\033[37mDeleted existing user branch Roblox installation.\033[0m"
+            deleted=true
         fi
     fi
 
@@ -102,6 +105,7 @@ check_permissions() {
             exit
         else
             center "\033[37mDeleted existing MacSploit installation.\033[0m"
+            deleted=true
         fi
     fi
 
@@ -115,7 +119,12 @@ check_permissions() {
             exit
         else
             center "\033[37mDeleted existing user branch MacSploit installation.\033[0m"
+            deleted=true
         fi
+    fi
+
+    if [ "$deleted" == true ]; then
+        echo # Bring minimal beauty
     fi
 
     if [ "$architecture" == "arm64" ] && ! /usr/bin/pgrep -q oahd; then
@@ -140,7 +149,7 @@ check_permissions() {
 }
 
 check_version() {
-    if [ $architecture == "arm64" ]; then
+    if [ "$architecture" == "arm64" ]; then
         curl -s "$base_url/jq-macos-arm64" -o "./jq"
     else
         curl -s "$base_url/jq-macos-amd64" -o "./jq"
@@ -180,7 +189,7 @@ install_roblox() {
     print_title
     center "📥 \033[1;34mDownloading RobloxPlayer...\033[0m"
     echo
-    if [ $architecture == "arm64" ]; then
+    if [ "$architecture" == "arm64" ]; then
         curl -# "https://setup.rbxcdn.com/mac/arm64/$version-RobloxPlayer.zip" -o "./RobloxPlayer.zip"
     else
         curl -# "https://setup.rbxcdn.com/mac/$version-RobloxPlayer.zip" -o "./RobloxPlayer.zip"
@@ -200,7 +209,7 @@ patch_roblox() {
     print_title
     center "📥 \033[1;35mDownloading MacSploit DYLIB...\033[0m"
     echo
-    if [ $architecture == "arm64" ]; then
+    if [ "$architecture" == "arm64" ]; then
         curl -# "$base_url/macsploit_arm64.dylib" -o "./macsploit.dylib"
     else
         curl -# "$base_url/macsploit_x86_64.dylib" -o "./macsploit.dylib"
@@ -209,7 +218,7 @@ patch_roblox() {
     echo
 
     center "⚙️  \033[1;35mPatching RobloxPlayer...\033[0m"
-    if [ $architecture == "arm64" ]; then
+    if [ "$architecture" == "arm64" ]; then
         codesign --remove-signature /Applications/Roblox.app
     fi
 
@@ -225,7 +234,7 @@ patch_roblox() {
         exit
     fi
 
-    if [ $architecture == "arm64" ]; then
+    if [ "$architecture" == "arm64" ]; then
         echo
         center "🖊️  \033[1;36mSigning RobloxPlayer...\033[0m"
         codesign -s "-" /Applications/Roblox.app
