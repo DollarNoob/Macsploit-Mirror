@@ -68,42 +68,54 @@ check_permissions() {
     fi
 
     if [[ -d "/Applications/Roblox.app" ]]; then
-        if find "/Applications/Roblox.app" ! -exec test -w {} \; -print -quit | grep -q .; then
+        local error=$(rm -rf "/Applications/Roblox.app" 2>&1)
+        if echo "$error" | grep -q "Permission denied"; then
             center "\033[31mTerminal is unable to access your current Roblox installation.\033[0m"
             center "\033[31mPlease input your password to run the installer with sudo permissions.\033[0m"
             echo
             sudo -E bash -c "$(curl -s "$base_url/install.sh")"
             exit
+        else
+            center "\033[37mDeleted existing Roblox installation.\033[0m"
         fi
     fi
 
     if [[ -d "./Applications/Roblox.app" ]]; then
-        if find "./Applications/Roblox.app" ! -exec test -w {} \; -print -quit | grep -q .; then
+        local error=$(rm -rf "./Applications/Roblox.app" 2>&1)
+        if echo "$error" | grep -q "Permission denied"; then
             center "\033[31mTerminal is unable to access your current Roblox installation.\033[0m"
             center "\033[31mPlease input your password to run the installer with sudo permissions.\033[0m"
             echo
             sudo -E bash -c "$(curl -s "$base_url/install.sh")"
             exit
+        else
+            center "\033[37mDeleted existing user branch Roblox installation.\033[0m"
         fi
     fi
 
     if [[ -d "/Applications/MacSploit.app" ]]; then
-        if find "/Applications/MacSploit.app" ! -exec test -w {} \; -print -quit | grep -q .; then
+        local error=$(rm -rf "/Applications/MacSploit.app" 2>&1)
+        if echo "$error" | grep -q "Permission denied"; then
             center "\033[31mTerminal is unable to access your current MacSploit installation.\033[0m"
             center "\033[31mPlease input your password to run the installer with sudo permissions.\033[0m"
             echo
             sudo -E bash -c "$(curl -s "$base_url/install.sh")"
             exit
+        else
+            center "\033[37mDeleted existing MacSploit installation.\033[0m"
         fi
     fi
 
     if [[ -d "./Applications/MacSploit.app" ]]; then
-        if find "./Applications/MacSploit.app" ! -exec test -w {} \; -print -quit | grep -q .; then
+        local error=$(rm -rf "./Applications/MacSploit.app" 2>&1)
+        if echo "$error" | grep -q "Permission denied"; then
             center "\033[31mTerminal is unable to access your current MacSploit installation.\033[0m"
             center "\033[31mPlease input your password to run the installer with sudo permissions.\033[0m"
             echo
             sudo -E bash -c "$(curl -s "$base_url/install.sh")"
             exit
+        else
+            center "\033[37mDeleted existing user branch MacSploit installation.\033[0m"
         fi
     fi
 
@@ -178,8 +190,6 @@ install_roblox() {
     echo
 
     center "⚙️  \033[1;34mInstalling RobloxPlayer...\033[0m"
-    [ -d "/Applications/Roblox.app" ] && rm -rf "/Applications/Roblox.app"
-    [ -d "./Applications/Roblox.app" ] && rm -rf "./Applications/Roblox.app"
 
     /usr/bin/unzip -o -q "./RobloxPlayer.zip"
     mv ./RobloxPlayer.app /Applications/Roblox.app
@@ -234,8 +244,6 @@ install_macsploit() {
     echo
 
     center "⚙️  \033[1;35mInstalling MacSploit...\033[0m"
-    [ -d "/Applications/MacSploit.app" ] && rm -rf "/Applications/MacSploit.app"
-    [ -d "./Applications/MacSploit.app" ] && rm -rf "./Applications/MacSploit.app"
 
     /usr/bin/unzip -o -q "./MacSploit.zip"
     mv ./MacSploit.app /Applications/MacSploit.app
