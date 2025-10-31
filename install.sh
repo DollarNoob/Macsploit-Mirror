@@ -199,10 +199,14 @@ install_roblox() {
     center "⚙️  \033[1;34mInstalling RobloxPlayer...\033[0m"
 
     /usr/bin/unzip -o -q "./RobloxPlayer.zip"
-    mv ./RobloxPlayer.app /Applications/Roblox.app
-    rm ./RobloxPlayer.zip
-
-    sleep 1
+    if ! mv ./RobloxPlayer.app /Applications/Roblox.app; then
+        echo
+        center "Sorry, an unexpected error has occurred: C01."
+        center "Please contact support for help."
+        echo
+        exit
+    fi
+    rm -f ./RobloxPlayer.zip
 }
 
 patch_roblox() {
@@ -222,7 +226,13 @@ patch_roblox() {
         codesign --remove-signature /Applications/Roblox.app
     fi
 
-    mv ./macsploit.dylib "/Applications/Roblox.app/Contents/MacOS/macsploit.dylib"
+    if ! mv ./macsploit.dylib "/Applications/Roblox.app/Contents/MacOS/macsploit.dylib"; then
+        echo
+        center "Sorry, an unexpected error has occurred: C03."
+        center "Please contact support for help."
+        echo
+        exit
+    fi
 
     chmod +x ./insert_dylib
     local output=$(./insert_dylib "/Applications/Roblox.app/Contents/MacOS/macsploit.dylib" "/Applications/Roblox.app/Contents/MacOS/RobloxPlayer" "/Applications/Roblox.app/Contents/MacOS/RobloxPlayer" --overwrite --strip-codesig --all-yes)
@@ -253,10 +263,14 @@ install_macsploit() {
     center "⚙️  \033[1;35mInstalling MacSploit...\033[0m"
 
     /usr/bin/unzip -o -q "./MacSploit.zip"
-    mv ./MacSploit.app /Applications/MacSploit.app
-    rm ./MacSploit.zip
-
-    sleep 1
+    if ! mv ./MacSploit.app /Applications/MacSploit.app; then
+        echo
+        center "Sorry, an unexpected error has occurred: C02."
+        center "Please contact support for help."
+        echo
+        exit
+    fi
+    rm -f ./MacSploit.zip
 }
 
 clean_up() {
