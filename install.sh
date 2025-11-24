@@ -50,6 +50,22 @@ check_permissions() {
         exit
     fi
 
+    # Warning: Failed to open the file ./RobloxPlayer.zip: Permission denied
+    local error=$(touch ./RobloxPlayer.zip 2>&1)
+    if echo "$error" | grep -q "Operation not permitted"; then
+        center "\033[31mTerminal is unable to access your Home folder.\033[0m"
+        center "\033[31mPlease grant Full Disk Access to Terminal and try again.\033[0m"
+        echo
+        open "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
+        exit
+    elif echo "$error" | grep -q "Permission denied"; then
+        center "\033[31mTerminal is unable to access your Home folder.\033[0m"
+        center "\033[31mPlease input your password to run the installer with sudo permissions.\033[0m"
+        echo
+        sudo -E bash -c "$(curl -s "$base_url/install.sh")"
+        exit
+    fi
+
     if [[ ! -w ./Downloads || ! -x ./Downloads ]]; then
         center "\033[31mTerminal is unable to access your Downloads folder.\033[0m"
         center "\033[31mPlease grant Full Disk Access to Terminal and try again.\033[0m"
