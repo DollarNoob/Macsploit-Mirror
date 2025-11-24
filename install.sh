@@ -234,7 +234,7 @@ patch_roblox() {
     else
         curl -# "$base_url/macsploit_x86_64.dylib" -o "./macsploit.dylib"
     fi
-    curl -#O "$base_url/insert_dylib"
+    curl -# "$base_url/insert_dylib" -o "./insert_dylib"
     echo
 
     center "⚙️  \033[1;35mPatching RobloxPlayer...\033[0m"
@@ -273,7 +273,7 @@ install_macsploit() {
     print_title
     center "📥 \033[1;35mDownloading MacSploit...\033[0m"
     echo
-    curl -#O "$base_url/MacSploit.zip"
+    curl -# "$base_url/MacSploit.zip" -o "./MacSploit.zip"
     echo
 
     center "⚙️  \033[1;35mInstalling MacSploit...\033[0m"
