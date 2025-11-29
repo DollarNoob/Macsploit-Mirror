@@ -303,7 +303,7 @@ clean_up() {
         exit
     elif echo "$error" | grep -q "Permission denied"; then
         center "\033[31mTerminal is unable to access your Downloads folder.\033[0m"
-        center "\033[31mPlease input your password to access it.\033[0m"
+        center "\033[31mPlease input your password to grant access.\033[0m"
         echo
         local error=$(sudo touch "$HOME/Downloads/ms-version.json" 2>&1)
         if echo "$error" | grep -q "Permission denied"; then
@@ -336,8 +336,8 @@ clean_up() {
     # Fix for inaccessible workspace folder
     local owner=$(stat -f %Su ~/Documents/Macsploit\ Workspace)
     if [ "$owner" = "root" ]; then
-        center "\033[31mTerminal is unable to access your Documents folder.\033[0m"
-        center "\033[31mPlease input your password to access it.\033[0m"
+        center "\033[31mMacSploit is unable to access your Documents folder.\033[0m"
+        center "\033[31mPlease input your password to grant access.\033[0m"
         echo
         sudo chown -R $USER ~/Documents/Macsploit\ Workspace
     fi
