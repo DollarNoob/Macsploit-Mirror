@@ -339,7 +339,7 @@ clean_up() {
         center "\033[31mMacSploit is unable to access your Documents folder.\033[0m"
         center "\033[31mPlease input your password to grant access.\033[0m"
         echo
-        sudo chown -R "$(whoami)":staff ~/Documents/Macsploit\ Workspace
+        sudo chown -R "$(whoami)":staff "$HOME/Documents/Macsploit Workspace"
     fi
 
     center '✨ \033[1;32mInstallation Complete!\033[0m'
