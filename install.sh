@@ -303,9 +303,15 @@ clean_up() {
         exit
     elif echo "$error" | grep -q "Permission denied"; then
         center "\033[31mTerminal is unable to access your Downloads folder.\033[0m"
-        center "\033[31mPlease input your password to run the installer with sudo permissions.\033[0m"
+        center "\033[31mPlease input your password to access it.\033[0m"
         echo
-        sudo touch "$HOME/Downloads/ms-version.json"
+        local error=$(sudo touch "$HOME/Downloads/ms-version.json" 2>&1)
+        if echo "$error" | grep -q "Permission denied"; then
+            center "\033[31mTerminal was unable to access your Downloads folder.\033[0m"
+            center "\033[31mPlease contact support for help.\033[0m"
+            echo
+            exit
+        fi
         sudo echo $version_info > "$HOME/Downloads/ms-version.json"
     else
         echo $version_info > ./Downloads/ms-version.json
@@ -321,6 +327,19 @@ clean_up() {
     if [ $? -eq 0 ]; then
         # Create required folder (without this Roblox would crash due to lack of permissions)
         sudo mkdir /Applications/Roblox.app/Contents/Resources/content/custom
+    fi
+
+    if [[ ! -d ~/Documents/Macsploit\ Workspace ]]; then
+        mkdir ~/Documents/Macsploit\ Workspace
+    fi
+
+    # Fix for inaccessible workspace folder
+    local owner=$(stat -f %Su ~/Documents/Macsploit\ Workspace)
+    if [ "$owner" = "root" ]; then
+        center "\033[31mTerminal is unable to access your Documents folder.\033[0m"
+        center "\033[31mPlease input your password to access it.\033[0m"
+        echo
+        sudo chown -R $USER ~/Documents/Macsploit\ Workspace
     fi
 
     center '✨ \033[1;32mInstallation Complete!\033[0m'
