@@ -67,9 +67,24 @@ check_permissions() {
         echo
         exit
     elif [[ "$status" != 0 ]]; then
-        echo "error: $error, status: $status"
         center "\033[91mAn unknown error has occurred: C-01.\033[0m"
         center "\033[91mThis is unexpected, please contact support.\033[0m"
+        echo
+        exit
+    fi
+
+    local error=$(rm -f "$HOME/Downloads/ms-version.json" 2>&1)
+    local status=$?
+    if echo "$error" | grep -q "Permission denied"; then
+        if ! can_sudo; then
+            center "\033[91mTerminal is unable to access your Downloads folder.\033[0m"
+            center "\033[91mPlease enter your password to grant sudo permissions.\033[0m"
+            echo
+        fi
+        sudo rm -f "$HOME/Downloads/ms-version.json"
+    elif [[ "$status" != 0 ]]; then
+        echo -e "\033[91mAn unknown error has occurred: C-99.\033[0m"
+        echo -e "\033[91mThis is unexpected, please contact support.\033[0m"
         echo
         exit
     fi
