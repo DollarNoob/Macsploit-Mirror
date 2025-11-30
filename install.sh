@@ -329,17 +329,15 @@ clean_up() {
         sudo mkdir /Applications/Roblox.app/Contents/Resources/content/custom
     fi
 
-    if [[ ! -d ~/Documents/Macsploit\ Workspace ]]; then
-        mkdir ~/Documents/Macsploit\ Workspace
-    fi
-
-    # Fix for inaccessible workspace folder
-    local owner=$(stat -f %Su ~/Documents/Macsploit\ Workspace)
-    if [ "$owner" = "root" ]; then
-        center "\033[31mMacSploit is unable to access your Documents folder.\033[0m"
-        center "\033[31mPlease input your password to grant access.\033[0m"
-        echo
-        sudo chown -R "$(whoami)":staff "$HOME/Documents/Macsploit Workspace"
+    if [[ -d ~/Documents/Macsploit\ Workspace ]]; then
+        # Potential fix for inaccessible workspace folder
+        local owner=$(stat -f %Su ~/Documents/Macsploit\ Workspace)
+        if [ "$owner" = "root" ]; then
+            center "\033[31mMacSploit is unable to access your Documents folder.\033[0m"
+            center "\033[31mPlease input your password to grant access.\033[0m"
+            echo
+            sudo chown -R "$(whoami)":staff "$HOME/Documents/Macsploit Workspace"
+        fi
     fi
 
     center '✨ \033[1;32mInstallation Complete!\033[0m'
