@@ -104,7 +104,7 @@ check_permissions() {
             echo
         fi
 
-        local error=$(sudo -u "$USER" touch "$HOME/Downloads/ms-version.json" 2>&1)
+        local error=$(sudo touch "$HOME/Downloads/ms-version.json" 2>&1)
         local status=$?
         if echo "$error" | grep -q "Permission denied"; then
             center "\033[91mTerminal was unable to access your Downloads folder.\033[0m"
@@ -117,6 +117,7 @@ check_permissions() {
             echo
             exit
         fi
+        sudo chown "$USER" "$HOME/Downloads/ms-version.json"
     elif [[ "$status" != 0 ]]; then
         center "\033[91mAn unknown error has occurred: C-03.\033[0m"
         center "\033[91mThis is unexpected, please contact support.\033[0m"
