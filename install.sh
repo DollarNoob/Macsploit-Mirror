@@ -125,17 +125,6 @@ check_permissions() {
         exit
     fi
 
-    # TODO: Remove this later
-    if [[ -d "$HOME/Documents/Macsploit Workspace" ]]; then
-        local owner=$(stat -f %Su "$HOME/Documents/Macsploit Workspace")
-        if [[ "$owner" == "root" ]]; then
-            center "\033[91mMacSploit is unable to access your Documents folder.\033[0m"
-            center "\033[91mPlease enter your password to grant access.\033[0m"
-            echo
-            sudo chown -R "$(whoami)":staff "$HOME/Documents/Macsploit Workspace"
-        fi
-    fi
-
     local deleted=false
     if [[ -d "/Applications/Roblox.app" ]]; then
         local error=$(rm -rf /Applications/Roblox.app 2>&1)
@@ -296,8 +285,29 @@ install_roblox() {
     rm -rf "$PWD/RobloxPlayer.app/Contents/MacOS/Roblox.app"
     rm -rf "$PWD/RobloxPlayer.app/Contents/MacOS/RobloxPlayerInstaller.app"
 
-    if ! mv "$PWD/RobloxPlayer.app" /Applications/Roblox.app; then
-        echo
+    local error=$(mv "$PWD/RobloxPlayer.app" "/Applications/Roblox.app" 2>&1)
+    local status=$?
+    if echo "$error" | grep -q "Permission denied"; then
+        if ! can_sudo; then
+            center "\033[91mTerminal is unable to access your Applications folder.\033[0m"
+            center "\033[91mPlease enter your password to grant sudo permissions.\033[0m"
+            echo
+        fi
+
+        local error=$(sudo mv "$PWD/RobloxPlayer.app" "/Applications/Roblox.app" 2>&1)
+        local status=$?
+        if echo "$error" | grep -q "Permission denied"; then
+            center "\033[91mTerminal was unable to access your Applications folder.\033[0m"
+            center "\033[91mPlease contact support for help.\033[0m"
+            echo
+            exit
+        elif [[ "$status" != 0 ]]; then
+            center "\033[91mAn unknown error has occurred: C-08.\033[0m"
+            center "\033[91mThis is unexpected, please contact support.\033[0m"
+            echo
+            exit
+        fi
+    elif [[ "$status" != 0 ]]; then
         center "\033[91mAn unknown error has occurred: C-08.\033[0m"
         center "\033[91mThis is unexpected, please contact support.\033[0m"
         echo
