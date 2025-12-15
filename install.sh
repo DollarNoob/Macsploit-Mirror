@@ -1,6 +1,7 @@
 #!/bin/bash
 
 PWD="$TMPDIR/Macsploit-Mirror"
+APPDIR="/Applications"
 BASE_URL="https://raw.githubusercontent.com/DollarNoob/Macsploit-Mirror/main"
 
 print_title() {
@@ -108,6 +109,11 @@ check_permissions() {
         local status=$?
         if echo "$error" | grep -q "Permission denied"; then
             center "\033[91mTerminal was unable to access your Downloads folder.\033[0m"
+            center "\033[91mPlease contact support for help.\033[0m"
+            echo
+            exit
+        elif echo "$error" | grep -q "is not in the sudoers file."; then
+            center "\033[91mTerminal was unable to access your user folder.\033[0m"
             center "\033[91mPlease contact support for help.\033[0m"
             echo
             exit
@@ -280,12 +286,13 @@ install_roblox() {
     echo
 
     center "⚙️  \033[1;34mInstalling RobloxPlayer...\033[0m"
+    echo
 
     /usr/bin/unzip -o -q "$PWD/RobloxPlayer.zip" -d "$PWD"
     rm -rf "$PWD/RobloxPlayer.app/Contents/MacOS/Roblox.app"
     rm -rf "$PWD/RobloxPlayer.app/Contents/MacOS/RobloxPlayerInstaller.app"
 
-    local error=$(mv "$PWD/RobloxPlayer.app" "/Applications/Roblox.app" 2>&1)
+    local error=$(mv "$PWD/RobloxPlayer.app" "$APPDIR/Roblox.app" 2>&1)
     local status=$?
     if echo "$error" | grep -q "Permission denied"; then
         if ! can_sudo; then
@@ -294,13 +301,29 @@ install_roblox() {
             echo
         fi
 
-        local error=$(sudo mv "$PWD/RobloxPlayer.app" "/Applications/Roblox.app" 2>&1)
+        local error=$(sudo mv "$PWD/RobloxPlayer.app" "$APPDIR/Roblox.app" 2>&1)
         local status=$?
         if echo "$error" | grep -q "Permission denied"; then
             center "\033[91mTerminal was unable to access your Applications folder.\033[0m"
             center "\033[91mPlease contact support for help.\033[0m"
             echo
             exit
+        elif echo "$error" | grep -q "is not in the sudoers file."; then
+            APPDIR="$HOME/Applications"
+
+            local error=$(mv "$PWD/RobloxPlayer.app" "$APPDIR/Roblox.app" 2>&1)
+            local status=$?
+            if echo "$error" | grep -q "Permission denied"; then
+                center "\033[91mTerminal was unable to access your user folder.\033[0m"
+                center "\033[91mPlease contact support for help.\033[0m"
+                echo
+                exit
+            elif [[ "$status" != 0 ]]; then
+                center "\033[91mAn unknown error has occurred: C-08.\033[0m"
+                center "\033[91mThis is unexpected, please contact support.\033[0m"
+                echo
+                exit
+            fi
         elif [[ "$status" != 0 ]]; then
             center "\033[91mAn unknown error has occurred: C-08.\033[0m"
             center "\033[91mThis is unexpected, please contact support.\033[0m"
@@ -329,10 +352,10 @@ patch_roblox() {
 
     center "⚙️  \033[1;35mPatching RobloxPlayer...\033[0m"
     if [[ "$ARCH" == "arm64" ]]; then
-        /usr/bin/codesign --remove-signature /Applications/Roblox.app
+        /usr/bin/codesign --remove-signature "$APPDIR/Roblox.app"
     fi
 
-    if ! mv "$PWD/macsploit.dylib" /Applications/Roblox.app/Contents/MacOS/macsploit.dylib; then
+    if ! mv "$PWD/macsploit.dylib" "$APPDIR/Roblox.app/Contents/MacOS/macsploit.dylib"; then
         echo
         center "\033[91mAn unknown error has occurred: C-09.\033[0m"
         center "\033[91mThis is unexpected, please contact support.\033[0m"
@@ -341,8 +364,8 @@ patch_roblox() {
     fi
 
     chmod +x "$PWD/insert_dylib"
-    local output=$("$PWD/insert_dylib" /Applications/Roblox.app/Contents/MacOS/macsploit.dylib /Applications/Roblox.app/Contents/MacOS/RobloxPlayer /Applications/Roblox.app/Contents/MacOS/RobloxPlayer --overwrite --strip-codesig --all-yes)
-    if [[ "$output" != "Added LC_LOAD_DYLIB to /Applications/Roblox.app/Contents/MacOS/RobloxPlayer" ]]; then
+    local output=$("$PWD/insert_dylib" "$APPDIR/Roblox.app/Contents/MacOS/macsploit.dylib" "$APPDIR/Roblox.app/Contents/MacOS/RobloxPlayer" "$APPDIR/Roblox.app/Contents/MacOS/RobloxPlayer" --overwrite --strip-codesig --all-yes)
+    if ! echo "$output" | grep -q "Added LC_LOAD_DYLIB to"; then
         center "\033[91mTerminal was unable to patch RobloxPlayer.\033[0m"
         center "\033[91mThis is usually caused by anti-virus softwares.\033[0m"
         center "\033[91mIf you have one running, please disable it and try again.\033[0m"
@@ -353,7 +376,7 @@ patch_roblox() {
     if [[ "$ARCH" == "arm64" ]]; then
         echo
         center "🖊️  \033[1;36mSigning RobloxPlayer...\033[0m"
-        codesign -s - /Applications/Roblox.app
+        codesign -s - "$APPDIR/Roblox.app"
     fi
 }
 
@@ -367,7 +390,7 @@ install_macsploit() {
     center "⚙️  \033[1;35mInstalling MacSploit...\033[0m"
 
     /usr/bin/unzip -o -q "$PWD/MacSploit.zip" -d "$PWD"
-    if ! mv "$PWD/MacSploit.app" /Applications/MacSploit.app; then
+    if ! mv "$PWD/MacSploit.app" "$APPDIR/MacSploit.app"; then
         echo
         center "\033[91mAn unknown error has occurred: C-10.\033[0m"
         center "\033[91mThis is unexpected, please contact support.\033[0m"
@@ -394,6 +417,11 @@ clean_up() {
         local status=$?
         if echo "$error" | grep -q "Permission denied"; then
             center "\033[91mTerminal was unable to access your Downloads folder.\033[0m"
+            center "\033[91mPlease contact support for help.\033[0m"
+            echo
+            exit
+        elif echo "$error" | grep -q "is not in the sudoers file."; then
+            center "\033[91mTerminal was unable to access your user folder.\033[0m"
             center "\033[91mPlease contact support for help.\033[0m"
             echo
             exit
