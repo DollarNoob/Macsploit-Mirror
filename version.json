@@ -1,8 +1,8 @@
 ﻿{
-    "clientVersionUpload": "version-138c1a7864754c2a",
+    "clientVersionUpload": "version-cfe7460f53b444a5",
     "appVersion": "vmcklx493",
-    "clientVersion": "klsdf923",
-    "relVersion": "1.9.6x",
+    "clientVersion": "actors_v1",
+    "relVersion": "1.9.7",
     "channel": "live",
-    "changelog": "100% sunc + undetected execution + native injection"
+    "changelog": "100% sunc + undetected execution + native injection + actors"
 }
