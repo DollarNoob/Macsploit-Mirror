@@ -17,6 +17,124 @@ print_title() {
     echo
 }
 
+authenticate() {
+    local hwid=$(get_hwid)
+
+    # ! DO NOT TOUCH ! DO NOT TOUCH ! DO NOT TOUCH !
+    local whitelist # MUST assign the variable before initializing to prevent $? not working properly
+    whitelist=$(curl -s "https://git.raptor.fun/api/whitelist?hwid=$hwid" 2>&1)
+    local status=$?
+    if [[ "$status" != 0 ]]; then
+        center "\033[91mYour network failed to contact MacSploit's servers.\033[0m"
+        center "\033[91mPlease connect to a VPN and try again. (Error Code $status)\033[0m"
+        echo
+        center "\033[33mAlthough you could still install MacSploit,\033[0m"
+        center "\033[33myou will not be able to use MacSploit without a VPN.\033[0m"
+        center "Do you want to proceed? (Y/N): \c"
+        while read -n 1 -s -r answer; do
+            if [[ "$answer" =~ ^[Yy]$ ]]; then
+                print_title
+                return
+            elif [[ "$answer" =~ ^[Nn]$ ]]; then
+                echo
+                echo
+                exit
+            fi
+        done
+    fi
+
+    local trial=false
+    if [[ "$whitelist" == '{"success":true,"message":"Whitelist check complete.","free_trial":false}' ]]; then
+        center "\033[36mWelcome back to the MacSploit experience, paid access user!\033[0m"
+        sleep 2
+        print_title
+        return
+    elif [[ "$whitelist" == '{"success":true,"message":"Whitelist check complete. Early Access.","free_trial":false}' ]]; then
+        center "\033[36mWelcome back to the MacSploit experience, early access user!\033[0m"
+        sleep 2
+        print_title
+        return
+    elif [[ "$whitelist" == '{"success":true,"message":"Whitelist check complete.","free_trial":true,"welcome":true}' ]]; then
+        trial=true
+        center "\033[36mWelcome to the MacSploit experience!\033[0m"
+        echo
+        center "\033[32mIt looks like you're eligible for a free trial for 4 days!\033[0m"
+        center "\033[32mPress enter to continue as free trial.\033[0m"
+        echo
+        center "\033[33mYou can purchase a license key @ https://raptor.fun/\033[0m"
+    elif echo "$whitelist" | grep -q '"success":false'; then
+        center "\033[36mWelcome to the MacSploit experience!\033[0m"
+        echo
+        center "\033[91mYour free trial has expired.\033[0m"
+        center "\033[91mPlease purchase MacSploit to continue.\033[0m"
+        echo
+        center "\033[33mYou can purchase a license key @ https://raptor.fun/\033[0m"
+    else
+        center "\033[91mAn unknown error has occurred: $whitelist.\033[0m"
+        center "\033[91mThis is unexpected, please contact support.\033[0m"
+        echo
+        exit
+    fi
+
+    echo
+    local cols=$(tput cols)
+    local pad=$(((cols - 63) / 2)) # 31 (message) + 32 (key)
+    printf "%*s%b\n" "$pad" "" "Please enter your license key: \c"
+
+    read license
+    echo
+
+    if [[ ${#license} -ne 32 ]]; then
+        if [[ "$trial" == true ]]; then
+            center "\033[32mProceeding as free trial.\033[0m"
+            sleep 2
+            print_title
+            return
+        else
+            center "\033[91mAn invalid key was entered. Please try again.\033[0m"
+            echo
+            exit
+        fi
+    fi
+
+    # ! DO NOT TOUCH ! DO NOT TOUCH ! DO NOT TOUCH !
+    local resp # MUST assign the variable before initializing to prevent $? not working properly
+    resp=$(curl -s "https://git.raptor.fun/api/sellix?key=$license&hwid=$hwid")
+    local status=$?
+    if [[ "$resp" == "Key Activation Complete!" ]]; then
+        center "\033[32mYour license has been activated successfully!\033[0m"
+        sleep 2
+        print_title
+        return
+    elif [[ "$resp" == "Invalid Key Entered." ]]; then
+        center "\033[91mAn invalid key was entered. Please try again.\033[0m"
+        echo
+        exit
+    elif [[ "$status" != 0 ]]; then
+        center "\033[91mYour network failed to contact MacSploit's servers.\033[0m"
+        center "\033[91mPlease connect to a VPN and try again. (Error Code $status)\033[0m"
+        echo
+        center "\033[33mAlthough you could still install MacSploit,\033[0m"
+        center "\033[33myou will not be able to use MacSploit without a VPN.\033[0m"
+        center "Do you want to proceed? (Y/N): \c"
+        while read -n 1 -s -r answer; do
+            if [[ "$answer" =~ ^[Yy]$ ]]; then
+                print_title
+                return
+            elif [[ "$answer" =~ ^[Nn]$ ]]; then
+                echo
+                echo
+                exit
+            fi
+        done
+    else
+        center "\033[91mAn unknown error has occurred: $resp.\033[0m"
+        center "\033[91mThis is unexpected, please contact support.\033[0m"
+        echo
+        exit
+    fi
+}
+
 check_requirements() {
     local os_version=$(sw_vers -productVersion)
     ARCH=$(uname -m)
@@ -226,8 +344,10 @@ check_permissions() {
                 echo
                 echo
                 softwareupdate --install-rosetta --agree-to-license
-                bash -c "$(curl -s "$BASE_URL/install.sh")" # I need a better fix for this
-                exit
+                # restart from the start
+                print_title
+                check_requirements
+                check_permissions
             elif [[ "$answer" =~ ^[Nn]$ ]]; then
                 echo
                 echo
@@ -376,7 +496,7 @@ patch_roblox() {
     if [[ "$ARCH" == "arm64" ]]; then
         echo
         center "🖊️  \033[1;36mSigning RobloxPlayer...\033[0m"
-        codesign -s - "$APPDIR/Roblox.app"
+        /usr/bin/codesign -s - "$APPDIR/Roblox.app"
     fi
 }
 
@@ -448,7 +568,7 @@ center() {
     local text="$1"
     local cols=$(tput cols)
     local plaintext=$(echo -e "$text" | sed "s/\x1B\[[0-9;]*m//g")
-    local pad=$(( (cols - ${#plaintext}) / 2 ))
+    local pad=$(((cols - ${#plaintext}) / 2))
     printf "%*s%b\n" "$pad" "" "$text"
 }
 
@@ -456,7 +576,14 @@ can_sudo() {
     sudo -n true 2>/dev/null
 }
 
+get_hwid() {
+    # ChatGPT'd; don't ask how this works
+    # basically you grab the IOPlatformUUID then SHA1 it for the HWID
+    ioreg -rd1 -c IOPlatformExpertDevice | awk -F\" '/IOPlatformUUID/{print $4}' | tr -d "\n" | shasum | cut -f1 -d " "
+}
+
 print_title
+authenticate
 check_requirements
 check_permissions
 check_version
