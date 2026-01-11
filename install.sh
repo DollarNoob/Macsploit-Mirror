@@ -62,6 +62,15 @@ authenticate() {
         center "\033[32mPress enter to continue as free trial.\033[0m"
         echo
         center "\033[33mYou can purchase a license key @ https://raptor.fun/\033[0m"
+    elif [[ "$whitelist" == '{"success":true,"message":"Whitelist check complete.","free_trial":true}' ]]; then
+        trial=true
+        center "\033[36mWelcome to the MacSploit experience!\033[0m"
+        echo
+        center "\033[32mIt looks like you're currently on the free trial!\033[0m"
+        center "\033[32mPlease consider purchasing a paid license if you enjoy it :D\033[0m"
+        center "\033[32mPress enter to continue as free trial.\033[0m"
+        echo
+        center "\033[33mYou can purchase a license key @ https://raptor.fun/\033[0m"
     elif echo "$whitelist" | grep -q '"success":false'; then
         center "\033[36mWelcome to the MacSploit experience!\033[0m"
         echo
