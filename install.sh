@@ -4,6 +4,12 @@ PWD="$TMPDIR/Macsploit-Mirror"
 APPDIR="/Applications"
 BASE_URL="https://raw.githubusercontent.com/DollarNoob/Macsploit-Mirror/main"
 
+if [[ -z "$1" ]]; then
+    ARCH=$(uname -m)
+else
+    ARCH="$1"
+fi
+
 print_title() {
     clear
     center "\033[1;35m  __  __             _____       _       _ _    \033[0m"
@@ -146,7 +152,6 @@ authenticate() {
 
 check_requirements() {
     local os_version=$(sw_vers -productVersion)
-    ARCH=$(uname -m)
 
     if [[ "$(echo "$os_version" | cut -d. -f1)" -ge 11 ]]; then
         if [[ "$ARCH" == "arm64" ]]; then
