@@ -1,8 +1,8 @@
 ﻿{
-    "clientVersionUpload": "version-cfe7460f53b444a5",
+    "clientVersionUpload": "version-d695be9cd4a14e2c",
     "appVersion": "mckvlkfd",
-    "clientVersion": "vncxjk984",
-    "relVersion": "1.9.7",
+    "clientVersion": "setfflag_today",
+    "relVersion": "1.9.8",
     "channel": "live",
-    "changelog": "100% sunc + undetected execution + native injection + actors"
+    "changelog": "new working actors lib + working setfflag"
 }
