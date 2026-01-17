@@ -1,7 +1,7 @@
 ﻿{
     "clientVersionUpload": "version-d695be9cd4a14e2c",
     "appVersion": "mckvlkfd",
-    "clientVersion": "setfflag_today",
+    "clientVersion": "setfflag_yesterday",
     "relVersion": "1.9.8",
     "channel": "live",
     "changelog": "new working actors lib + working setfflag"
