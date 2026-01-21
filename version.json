@@ -1,8 +1,8 @@
 ﻿{
     "clientVersionUpload": "version-d695be9cd4a14e2c",
     "appVersion": "mckvlkfd",
-    "clientVersion": "setfflag_yesterday",
+    "clientVersion": "njkgfd8943",
     "relVersion": "1.9.8",
     "channel": "live",
-    "changelog": "new working actors lib + working setfflag"
+    "changelog": "introduced experimental queue_on_join and queue_on_leave"
 }
