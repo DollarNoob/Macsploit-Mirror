@@ -1,7 +1,7 @@
 ﻿{
-    "clientVersionUpload": "version-d695be9cd4a14e2c",
+    "clientVersionUpload": "version-c843808e9ead4657",
     "appVersion": "mckvlkfd",
-    "clientVersion": "xcnvjk892",
+    "clientVersion": "vnjckx8923",
     "relVersion": "1.9.8b",
     "channel": "live",
     "changelog": "introduced experimental queue_on_join and queue_on_leave"
