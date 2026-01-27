@@ -26,8 +26,7 @@ print_title() {
 authenticate() {
     local hwid=$(get_hwid)
 
-    # ! DO NOT TOUCH ! DO NOT TOUCH ! DO NOT TOUCH !
-    local whitelist # MUST assign the variable before initializing to prevent $? not working properly
+    local whitelist
     whitelist=$(curl -s "https://git.raptor.fun/api/whitelist?hwid=$hwid" 2>&1)
     local status=$?
     if [[ "$status" != 0 ]]; then
@@ -112,8 +111,7 @@ authenticate() {
         fi
     fi
 
-    # ! DO NOT TOUCH ! DO NOT TOUCH ! DO NOT TOUCH !
-    local resp # MUST assign the variable before initializing to prevent $? not working properly
+    local resp
     resp=$(curl -s "https://git.raptor.fun/api/sellix?key=$license&hwid=$hwid")
     local status=$?
     if [[ "$resp" == "Key Activation Complete!" ]]; then
@@ -125,9 +123,9 @@ authenticate() {
         center "\033[91mAn invalid key was entered. Please try again.\033[0m"
         echo
         exit
-    elif [[ "$status" != 0 ]]; then
+    elif [[ "$status" == 35 ]]; then
         center "\033[91mYour network failed to contact MacSploit's servers.\033[0m"
-        center "\033[91mPlease connect to a VPN and try again. (Error Code $status)\033[0m"
+        center "\033[91mPlease connect to a VPN and try again.\033[0m"
         echo
         center "\033[33mAlthough you could still install MacSploit,\033[0m"
         center "\033[33myou will not be able to use MacSploit without a VPN.\033[0m"
@@ -142,6 +140,11 @@ authenticate() {
                 exit
             fi
         done
+    elif [[ "$status" != 0 ]]; then
+        center "\033[91mAn unknown error has occurred: Error Code $status.\033[0m"
+        center "\033[91mThis is unexpected, please contact support.\033[0m"
+        echo
+        exit
     else
         center "\033[91mAn unknown error has occurred: $resp.\033[0m"
         center "\033[91mThis is unexpected, please contact support.\033[0m"
@@ -177,7 +180,8 @@ check_requirements() {
 
 check_permissions() {
     if [[ -d "$PWD" ]]; then
-        local error=$(rm -rf "$PWD" 2>&1)
+        local error
+        error=$(rm -rf "$PWD" 2>&1)
         local status=$?
         if echo "$error" | grep -q "Permission denied"; then
             center "\033[91mTerminal is unable to access your Temporary folder.\033[0m"
@@ -192,7 +196,8 @@ check_permissions() {
         fi
     fi
 
-    local error=$(mkdir "$PWD" 2>&1)
+    local error
+    error=$(mkdir "$PWD" 2>&1)
     local status=$?
     if echo "$error" | grep -q "Permission denied"; then
         center "\033[91mTerminal is unable to access your Temporary folder.\033[0m"
@@ -206,7 +211,8 @@ check_permissions() {
         exit
     fi
 
-    local error=$(rm -f "$HOME/Downloads/ms-version.json" 2>&1)
+    local error
+    error=$(rm -f "$HOME/Downloads/ms-version.json" 2>&1)
     local status=$?
     if echo "$error" | grep -q "Permission denied"; then
         if ! can_sudo; then
@@ -222,7 +228,8 @@ check_permissions() {
         exit
     fi
 
-    local error=$(touch "$HOME/Downloads/ms-version.json" 2>&1)
+    local error
+    error=$(touch "$HOME/Downloads/ms-version.json" 2>&1)
     local status=$?
     if echo "$error" | grep -q "Operation not permitted"; then
         center "\033[91mTerminal is unable to access your Downloads folder.\033[0m"
@@ -237,7 +244,8 @@ check_permissions() {
             echo
         fi
 
-        local error=$(sudo touch "$HOME/Downloads/ms-version.json" 2>&1)
+        local error
+        error=$(sudo touch "$HOME/Downloads/ms-version.json" 2>&1)
         local status=$?
         if echo "$error" | grep -q "Permission denied"; then
             center "\033[91mTerminal was unable to access your Downloads folder.\033[0m"
@@ -247,6 +255,12 @@ check_permissions() {
         elif echo "$error" | grep -q "is not in the sudoers file."; then
             center "\033[91mTerminal was unable to access your user folder.\033[0m"
             center "\033[91mPlease contact support for help.\033[0m"
+            echo
+            exit
+        elif [[ "$error" == "sudo: 3 incorrect password attempts" ]]; then
+            center "\033[91mYou have entered an incorrect password 3 times.\033[0m"
+            center "\033[91mYour password looks invisible but is still being typed.\033[0m"
+            center "\033[91mPlease try again.\033[0m"
             echo
             exit
         elif [[ "$status" != 0 ]]; then
@@ -265,7 +279,8 @@ check_permissions() {
 
     local deleted=false
     if [[ -d "/Applications/Roblox.app" ]]; then
-        local error=$(rm -rf /Applications/Roblox.app 2>&1)
+        local error
+        error=$(rm -rf "/Applications/Roblox.app" 2>&1)
         local status=$?
         if echo "$error" | grep -q "Permission denied"; then
             if ! can_sudo; then
@@ -273,7 +288,39 @@ check_permissions() {
                 center "\033[91mPlease enter your password to grant sudo permissions.\033[0m"
                 echo
             fi
-            sudo rm -rf /Applications/Roblox.app
+
+            local error
+            error=$(sudo rm -rf "/Applications/Roblox.app" 2>&1)
+            local status=$?
+            if echo "$error" | grep -q "Permission denied"; then
+                center "\033[91mTerminal was unable to access your Applications folder.\033[0m"
+                center "\033[91mPlease contact support for help.\033[0m"
+                echo
+                exit
+            elif echo "$error" | grep -q "is not in the sudoers file."; then
+                APPDIR="$HOME/Applications"
+
+                local error
+                error=$(mkdir "$APPDIR" 2>&1)
+                local status=$?
+                if ! echo "$error" | grep -q "File exists" && [[ "$status" != 0 ]]; then
+                    center "\033[91mTerminal was unable to create an user Applications folder.\033[0m"
+                    center "\033[91mThis is unexpected, please contact support.\033[0m"
+                    echo
+                    exit
+                fi
+            elif [[ "$error" == "sudo: 3 incorrect password attempts" ]]; then
+                center "\033[91mYou have entered an incorrect password 3 times.\033[0m"
+                center "\033[91mYour password looks invisible but is still being typed.\033[0m"
+                center "\033[91mPlease try again.\033[0m"
+                echo
+                exit
+            elif [[ "$status" != 0 ]]; then
+                center "\033[91mAn unknown error has occurred: C-04.\033[0m"
+                center "\033[91mThis is unexpected, please contact support.\033[0m"
+                echo
+                exit
+            fi
         elif [[ "$status" != 0 ]]; then
             center "\033[91mAn unknown error has occurred: C-04.\033[0m"
             center "\033[91mThis is unexpected, please contact support.\033[0m"
@@ -285,7 +332,8 @@ check_permissions() {
     fi
 
     if [[ -d "$HOME/Applications/Roblox.app" ]]; then
-        local error=$(rm -rf "$HOME/Applications/Roblox.app" 2>&1)
+        local error
+        error=$(rm -rf "$HOME/Applications/Roblox.app" 2>&1)
         local status=$?
         if echo "$error" | grep -q "Permission denied"; then
             if ! can_sudo; then
@@ -293,7 +341,39 @@ check_permissions() {
                 center "\033[91mPlease enter your password to grant sudo permissions.\033[0m"
                 echo
             fi
-            sudo rm -rf "$HOME/Applications/Roblox.app"
+
+            local error
+            error=$(sudo rm -rf "$HOME/Applications/Roblox.app" 2>&1)
+            local status=$?
+            if echo "$error" | grep -q "Permission denied"; then
+                center "\033[91mTerminal was unable to access your user folder.\033[0m"
+                center "\033[91mPlease contact support for help.\033[0m"
+                echo
+                exit
+            elif echo "$error" | grep -q "is not in the sudoers file."; then
+                APPDIR="$HOME/Applications"
+
+                local error
+                error=$(mkdir "$APPDIR" 2>&1)
+                local status=$?
+                if ! echo "$error" | grep -q "File exists" && [[ "$status" != 0 ]]; then
+                    center "\033[91mTerminal was unable to create an user Applications folder.\033[0m"
+                    center "\033[91mThis is unexpected, please contact support.\033[0m"
+                    echo
+                    exit
+                fi
+            elif [[ "$error" == "sudo: 3 incorrect password attempts" ]]; then
+                center "\033[91mYou have entered an incorrect password 3 times.\033[0m"
+                center "\033[91mYour password looks invisible but is still being typed.\033[0m"
+                center "\033[91mPlease try again.\033[0m"
+                echo
+                exit
+            elif [[ "$status" != 0 ]]; then
+                center "\033[91mAn unknown error has occurred: C-05.\033[0m"
+                center "\033[91mThis is unexpected, please contact support.\033[0m"
+                echo
+                exit
+            fi
         elif [[ "$status" != 0 ]]; then
             center "\033[91mAn unknown error has occurred: C-05.\033[0m"
             center "\033[91mThis is unexpected, please contact support.\033[0m"
@@ -305,7 +385,8 @@ check_permissions() {
     fi
 
     if [[ -d "/Applications/MacSploit.app" ]]; then
-        local error=$(rm -rf "/Applications/MacSploit.app" 2>&1)
+        local error
+        error=$(rm -rf "/Applications/MacSploit.app" 2>&1)
         local status=$?
         if echo "$error" | grep -q "Permission denied"; then
             if ! can_sudo; then
@@ -313,7 +394,39 @@ check_permissions() {
                 center "\033[91mPlease enter your password to grant sudo permissions.\033[0m"
                 echo
             fi
-            sudo rm -rf "/Applications/MacSploit.app"
+
+            local error
+            error=$(sudo rm -rf "/Applications/MacSploit.app" 2>&1)
+            local status=$?
+            if echo "$error" | grep -q "Permission denied"; then
+                center "\033[91mTerminal was unable to access your Applications folder.\033[0m"
+                center "\033[91mPlease contact support for help.\033[0m"
+                echo
+                exit
+            elif echo "$error" | grep -q "is not in the sudoers file."; then
+                APPDIR="$HOME/Applications"
+
+                local error
+                error=$(mkdir "$APPDIR" 2>&1)
+                local status=$?
+                if ! echo "$error" | grep -q "File exists" && [[ "$status" != 0 ]]; then
+                    center "\033[91mTerminal was unable to create an user Applications folder.\033[0m"
+                    center "\033[91mThis is unexpected, please contact support.\033[0m"
+                    echo
+                    exit
+                fi
+            elif [[ "$error" == "sudo: 3 incorrect password attempts" ]]; then
+                center "\033[91mYou have entered an incorrect password 3 times.\033[0m"
+                center "\033[91mYour password looks invisible but is still being typed.\033[0m"
+                center "\033[91mPlease try again.\033[0m"
+                echo
+                exit
+            elif [[ "$status" != 0 ]]; then
+                center "\033[91mAn unknown error has occurred: C-06.\033[0m"
+                center "\033[91mThis is unexpected, please contact support.\033[0m"
+                echo
+                exit
+            fi
         elif [[ "$status" != 0 ]]; then
             center "\033[91mAn unknown error has occurred: C-06.\033[0m"
             center "\033[91mThis is unexpected, please contact support.\033[0m"
@@ -325,7 +438,8 @@ check_permissions() {
     fi
 
     if [[ -d "$HOME/Applications/MacSploit.app" ]]; then
-        local error=$(rm -rf "$HOME/Applications/MacSploit.app" 2>&1)
+        local error
+        error=$(rm -rf "$HOME/Applications/MacSploit.app" 2>&1)
         local status=$?
         if echo "$error" | grep -q "Permission denied"; then
             if ! can_sudo; then
@@ -333,7 +447,39 @@ check_permissions() {
                 center "\033[91mPlease enter your password to grant sudo permissions.\033[0m"
                 echo
             fi
-            sudo rm -rf "$HOME/Applications/MacSploit.app"
+
+            local error
+            error=$(sudo rm -rf "$HOME/Applications/MacSploit.app" 2>&1)
+            local status=$?
+            if echo "$error" | grep -q "Permission denied"; then
+                center "\033[91mTerminal was unable to access your Applications folder.\033[0m"
+                center "\033[91mPlease contact support for help.\033[0m"
+                echo
+                exit
+            elif echo "$error" | grep -q "is not in the sudoers file."; then
+                APPDIR="$HOME/Applications"
+
+                local error
+                error=$(mkdir "$APPDIR" 2>&1)
+                local status=$?
+                if ! echo "$error" | grep -q "File exists" && [[ "$status" != 0 ]]; then
+                    center "\033[91mTerminal was unable to create an user Applications folder.\033[0m"
+                    center "\033[91mThis is unexpected, please contact support.\033[0m"
+                    echo
+                    exit
+                fi
+            elif [[ "$error" == "sudo: 3 incorrect password attempts" ]]; then
+                center "\033[91mYou have entered an incorrect password 3 times.\033[0m"
+                center "\033[91mYour password looks invisible but is still being typed.\033[0m"
+                center "\033[91mPlease try again.\033[0m"
+                echo
+                exit
+            elif [[ "$status" != 0 ]]; then
+                center "\033[91mAn unknown error has occurred: C-07.\033[0m"
+                center "\033[91mThis is unexpected, please contact support.\033[0m"
+                echo
+                exit
+            fi
         elif [[ "$status" != 0 ]]; then
             center "\033[91mAn unknown error has occurred: C-07.\033[0m"
             center "\033[91mThis is unexpected, please contact support.\033[0m"
@@ -426,7 +572,8 @@ install_roblox() {
     rm -rf "$PWD/RobloxPlayer.app/Contents/MacOS/Roblox.app"
     rm -rf "$PWD/RobloxPlayer.app/Contents/MacOS/RobloxPlayerInstaller.app"
 
-    local error=$(mv "$PWD/RobloxPlayer.app" "$APPDIR/Roblox.app" 2>&1)
+    local error
+    error=$(mv "$PWD/RobloxPlayer.app" "$APPDIR/Roblox.app" 2>&1)
     local status=$?
     if echo "$error" | grep -q "Permission denied"; then
         if ! can_sudo; then
@@ -435,7 +582,8 @@ install_roblox() {
             echo
         fi
 
-        local error=$(sudo mv "$PWD/RobloxPlayer.app" "$APPDIR/Roblox.app" 2>&1)
+        local error
+        error=$(sudo mv "$PWD/RobloxPlayer.app" "$APPDIR/Roblox.app" 2>&1)
         local status=$?
         if echo "$error" | grep -q "Permission denied"; then
             center "\033[91mTerminal was unable to access your Applications folder.\033[0m"
@@ -445,7 +593,18 @@ install_roblox() {
         elif echo "$error" | grep -q "is not in the sudoers file."; then
             APPDIR="$HOME/Applications"
 
-            local error=$(mv "$PWD/RobloxPlayer.app" "$APPDIR/Roblox.app" 2>&1)
+            local error
+            error=$(mkdir "$APPDIR" 2>&1)
+            local status=$?
+            if ! echo "$error" | grep -q "File exists" && [[ "$status" != 0 ]]; then
+                center "\033[91mTerminal was unable to create an user Applications folder.\033[0m"
+                center "\033[91mThis is unexpected, please contact support.\033[0m"
+                echo
+                exit
+            fi
+
+            local error
+            error=$(mv "$PWD/RobloxPlayer.app" "$APPDIR/Roblox.app" 2>&1)
             local status=$?
             if echo "$error" | grep -q "Permission denied"; then
                 center "\033[91mTerminal was unable to access your user folder.\033[0m"
@@ -458,6 +617,12 @@ install_roblox() {
                 echo
                 exit
             fi
+        elif [[ "$error" == "sudo: 3 incorrect password attempts" ]]; then
+            center "\033[91mYou have entered an incorrect password 3 times.\033[0m"
+            center "\033[91mYour password looks invisible but is still being typed.\033[0m"
+            center "\033[91mPlease try again.\033[0m"
+            echo
+            exit
         elif [[ "$status" != 0 ]]; then
             center "\033[91mAn unknown error has occurred: C-08.\033[0m"
             center "\033[91mThis is unexpected, please contact support.\033[0m"
@@ -538,7 +703,8 @@ clean_up() {
     center "🧹 \033[1;36mCleaning Up...\033[0m"
     echo
 
-    local error=$(echo "$VERSION_INFO" > "$HOME/Downloads/ms-version.json" 2>&1)
+    local error
+    error=$(echo "$VERSION_INFO" > "$HOME/Downloads/ms-version.json" 2>&1)
     local status=$?
     if echo "$error" | grep -q "Permission denied"; then
         if ! can_sudo; then
@@ -547,7 +713,8 @@ clean_up() {
             echo
         fi
 
-        local error=$(sudo echo "$VERSION_INFO" > "$HOME/Downloads/ms-version.json" 2>&1)
+        local error
+        error=$(sudo echo "$VERSION_INFO" > "$HOME/Downloads/ms-version.json" 2>&1)
         local status=$?
         if echo "$error" | grep -q "Permission denied"; then
             center "\033[91mTerminal was unable to access your Downloads folder.\033[0m"
@@ -557,6 +724,12 @@ clean_up() {
         elif echo "$error" | grep -q "is not in the sudoers file."; then
             center "\033[91mTerminal was unable to access your user folder.\033[0m"
             center "\033[91mPlease contact support for help.\033[0m"
+            echo
+            exit
+        elif [[ "$error" == "sudo: 3 incorrect password attempts" ]]; then
+            center "\033[91mYou have entered an incorrect password 3 times.\033[0m"
+            center "\033[91mYour password looks invisible but is still being typed.\033[0m"
+            center "\033[91mPlease try again.\033[0m"
             echo
             exit
         elif [[ "$status" != 0 ]]; then
