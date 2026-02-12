@@ -1,8 +1,8 @@
 {
-    "clientVersionUpload": "version-c843808e9ead4657",
+    "clientVersionUpload": "version-82324853106949ff",
     "appVersion": "nvji8943",
-    "clientVersion": "vnjckx8923",
-    "relVersion": "1.9.8b",
+    "clientVersion": "mvkclx8920",
+    "relVersion": "1.9.8c",
     "channel": "live",
-    "changelog": "introduced experimental queue_on_join and queue_on_leave"
+    "changelog": "updated sUNC rating to 100% again"
 }
