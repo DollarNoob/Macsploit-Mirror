@@ -59,6 +59,11 @@ authenticate() {
         sleep 2
         print_title
         return
+    elif [[ "$whitelist" == '{"success":true,"message":"Whitelist check complete. Its Dark.","free_trial":false}' ]]; then # what?
+        center "\033[36mWelcome back to the MacSploit experience, dark user!\033[0m"
+        sleep 2
+        print_title
+        return
     elif [[ "$whitelist" == '{"success":true,"message":"Whitelist check complete.","free_trial":true,"welcome":true}' ]]; then
         trial=true
         center "\033[36mWelcome to the MacSploit experience!\033[0m"
