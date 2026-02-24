@@ -219,7 +219,13 @@ check_permissions() {
     local error
     error=$(rm -f "$HOME/Downloads/ms-version.json" 2>&1)
     local status=$?
-    if echo "$error" | grep -q "Permission denied"; then
+    if echo "$error" | grep -q "Operation not permitted"; then
+        center "\033[91mTerminal is unable to access your Downloads folder.\033[0m"
+        center "\033[91mPlease grant Full Disk Access to Terminal and try again.\033[0m"
+        echo
+        open "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
+        exit
+    elif echo "$error" | grep -q "Permission denied"; then
         if ! can_sudo; then
             center "\033[91mTerminal is unable to access your Downloads folder.\033[0m"
             center "\033[91mPlease enter your password to grant sudo permissions.\033[0m"
