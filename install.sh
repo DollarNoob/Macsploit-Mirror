@@ -694,7 +694,16 @@ install_macsploit() {
     print_title
     center "📥 \033[1;35mDownloading MacSploit...\033[0m"
     echo
-    curl -# "$BASE_URL/MacSploit.zip" -o "$PWD/MacSploit.zip"
+    if [[ "$ARCH" == "arm64" ]]; then
+        curl -# "$BASE_URL/MacSploit_arm64.zip" -o "$PWD/MacSploit.zip"
+    else
+        curl -# "$BASE_URL/MacSploit_x86_64.zip" -o "$PWD/MacSploit.zip"
+    fi
+    if [[ ! -d "$HOME/Documents/MacsploitUI" ]]; then
+        mkdir "$HOME/Documents/MacsploitUI"
+        curl -# "$BASE_URL/scripts.zip" -o "$PWD/scripts.zip"
+        /usr/bin/unzip -o -q "$PWD/scripts.zip" -d "$HOME/Documents/MacsploitUI"
+    fi
     echo
 
     center "⚙️  \033[1;35mInstalling MacSploit...\033[0m"
