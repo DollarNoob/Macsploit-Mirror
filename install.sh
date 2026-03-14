@@ -700,9 +700,14 @@ install_macsploit() {
         curl -# "$BASE_URL/MacSploit_x86_64.zip" -o "$PWD/MacSploit.zip"
     fi
     if [[ ! -d "$HOME/Documents/MacsploitUI" ]]; then
-        mkdir "$HOME/Documents/MacsploitUI"
-        curl -# "$BASE_URL/scripts.zip" -o "$PWD/scripts.zip"
-        /usr/bin/unzip -o -q "$PWD/scripts.zip" -d "$HOME/Documents/MacsploitUI"
+        mkdir "$HOME/Documents/MacsploitUI" 2>/dev/null
+
+        # Only write default scripts when there is enough permissions to
+        local status=$?
+        if [[ "$status" == 0 ]]; then
+            curl -# "$BASE_URL/scripts.zip" -o "$PWD/scripts.zip"
+            /usr/bin/unzip -o -q "$PWD/scripts.zip" -d "$HOME/Documents/MacsploitUI"
+        fi
     fi
     echo
 
