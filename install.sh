@@ -49,45 +49,47 @@ authenticate() {
     fi
 
     local trial=false
-    if [[ "$whitelist" == '{"success":true,"message":"Whitelist check complete.","free_trial":false}' ]]; then
-        center "\033[36mWelcome back to the MacSploit experience, paid access user!\033[0m"
-        sleep 2
-        print_title
-        return
-    elif [[ "$whitelist" == '{"success":true,"message":"Whitelist check complete. Early Access.","free_trial":false}' ]]; then
-        center "\033[36mWelcome back to the MacSploit experience, early access user!\033[0m"
-        sleep 2
-        print_title
-        return
-    elif [[ "$whitelist" == '{"success":true,"message":"Whitelist check complete. Its Dark.","free_trial":false}' ]]; then # what?
-        center "\033[36mWelcome back to the MacSploit experience, dark user!\033[0m"
-        sleep 2
-        print_title
-        return
-    elif [[ "$whitelist" == '{"success":true,"message":"Whitelist check complete.","free_trial":true,"welcome":true}' ]]; then
-        trial=true
-        center "\033[36mWelcome to the MacSploit experience!\033[0m"
-        echo
-        center "\033[32mIt looks like you're eligible for a free trial for 4 days!\033[0m"
-        center "\033[32mPress enter to continue as free trial.\033[0m"
-        echo
-        center "\033[33mYou can purchase a license key @ https://raptor.fun/\033[0m"
-    elif [[ "$whitelist" == '{"success":true,"message":"Whitelist check complete.","free_trial":true}' ]]; then
-        trial=true
-        center "\033[36mWelcome to the MacSploit experience!\033[0m"
-        echo
-        center "\033[32mIt looks like you're currently on the free trial!\033[0m"
-        center "\033[32mPlease consider purchasing a paid license if you enjoy it :D\033[0m"
-        center "\033[32mPress enter to continue as free trial.\033[0m"
-        echo
-        center "\033[33mYou can purchase a license key @ https://raptor.fun/\033[0m"
-    elif echo "$whitelist" | grep -q '"success":false'; then
+    if echo "$whitelist" | grep -q '"success":false'; then
         center "\033[36mWelcome to the MacSploit experience!\033[0m"
         echo
         center "\033[91mYour free trial has expired.\033[0m"
         center "\033[91mPlease purchase MacSploit to continue.\033[0m"
         echo
         center "\033[33mYou can purchase a license key @ https://raptor.fun/\033[0m"
+    elif echo "$whitelist" | grep -q '"success":true'; then
+        if echo "$whitelist" | grep -q " Early Access."; then
+            center "\033[36mWelcome back to the MacSploit experience, early access user!\033[0m"
+            sleep 2
+            print_title
+            return
+        elif echo "$whitelist" | grep -q '"free_trial":false'; then
+            center "\033[36mWelcome back to the MacSploit experience, paid access user!\033[0m"
+            sleep 2
+            print_title
+            return
+        elif echo "$whitelist" | grep -q '"free_trial":true,"welcome":true'; then
+            trial=true
+            center "\033[36mWelcome to the MacSploit experience!\033[0m"
+            echo
+            center "\033[32mIt looks like you're eligible for a free trial for 4 days!\033[0m"
+            center "\033[32mPress enter to continue as free trial.\033[0m"
+            echo
+            center "\033[33mYou can purchase a license key @ https://raptor.fun/\033[0m"
+        elif echo "$whitelist" | grep -q '"free_trial":true'; then
+            trial=true
+            center "\033[36mWelcome to the MacSploit experience!\033[0m"
+            echo
+            center "\033[32mIt looks like you're currently on the free trial!\033[0m"
+            center "\033[32mPlease consider purchasing a paid license if you enjoy it :D\033[0m"
+            center "\033[32mPress enter to continue as free trial.\033[0m"
+            echo
+            center "\033[33mYou can purchase a license key @ https://raptor.fun/\033[0m"
+        else
+            center "\033[91mAn unknown error has occurred: $whitelist.\033[0m"
+            center "\033[91mThis is unexpected, please contact support.\033[0m"
+            echo
+            exit
+        fi
     else
         center "\033[91mAn unknown error has occurred: $whitelist.\033[0m"
         center "\033[91mThis is unexpected, please contact support.\033[0m"
@@ -128,6 +130,11 @@ authenticate() {
         center "\033[91mAn invalid key was entered. Please try again.\033[0m"
         echo
         exit
+    elif [[ "$resp" == "You have already been whitelisted on this computer.\nYou may use the key for another computer though." ]]; then
+        center "\033[32mYour device is already whitelisted.\033[0m"
+        sleep 2
+        print_title
+        return
     elif [[ "$status" == 35 ]]; then
         center "\033[91mYour network failed to contact MacSploit's servers.\033[0m"
         center "\033[91mPlease connect to a VPN and try again.\033[0m"
