@@ -1,8 +1,8 @@
 {
-    "clientVersionUpload": "version-f18963d432b94bd7",
-    "appVersion": "brand_new_ui_fix",
-    "clientVersion": "u8f8926",
-    "relVersion": "1.9.9",
+    "clientVersionUpload": "version-cf482a12325c4ed4",
+    "appVersion": "vnjckxds7842",
+    "clientVersion": "world",
+    "relVersion": "716.142",
     "channel": "live",
-    "changelog": "MacSploit's First UI Refresh!!"
+    "changelog": "updated to latest roblox version -> major stability and websocket improvements"
 }
