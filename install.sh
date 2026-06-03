@@ -27,7 +27,7 @@ authenticate() {
     local hwid=$(get_hwid)
 
     local whitelist
-    whitelist=$(curl -s "https://git.raptor.fun/api/whitelist?hwid=$hwid" 2>&1)
+    whitelist=$(curl -s "https://api.macsploit.dev/api/whitelist?hwid=$hwid" 2>&1)
     local status=$?
     if [[ "$status" != 0 ]]; then
         center "\033[91mYour network failed to contact MacSploit's servers.\033[0m"
@@ -119,7 +119,7 @@ authenticate() {
     fi
 
     local resp
-    resp=$(curl -s "https://git.raptor.fun/api/sellix?key=$license&hwid=$hwid")
+    resp=$(curl -s "https://api.macsploit.dev/api/sellix?key=$license&hwid=$hwid")
     local status=$?
     if [[ "$resp" == "Key Activation Complete!" ]]; then
         center "\033[32mYour license has been activated successfully!\033[0m"

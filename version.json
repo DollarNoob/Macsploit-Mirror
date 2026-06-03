@@ -1,8 +1,8 @@
 {
-    "clientVersionUpload": "version-1d604bb8b63849b4",
-    "appVersion": "enemy",
-    "clientVersion": "mars",
-    "relVersion": "719.142",
+    "clientVersionUpload": "version-b6bc8a3f6c184e6f",
+    "appVersion": "pluto",
+    "clientVersion": "stone",
+    "relVersion": "724.142",
     "channel": "live",
-    "changelog": "updated to the latest roblox version because .oliver1233 forced me to"
+    "changelog": "complete update + bug fixes for macsploit to latest roblox version"
 }
