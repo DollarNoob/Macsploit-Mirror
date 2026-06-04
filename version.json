@@ -1,8 +1,8 @@
 {
     "clientVersionUpload": "version-b6bc8a3f6c184e6f",
-    "appVersion": "pluto",
-    "clientVersion": "stone",
-    "relVersion": "724.142",
+    "appVersion": "ghost",
+    "clientVersion": "vampire",
+    "relVersion": "724.143",
     "channel": "live",
-    "changelog": "complete update + bug fixes for macsploit to latest roblox version"
+    "changelog": "Let's Beat Opiumware: - Project auto and many other scripts now work on MacSploit because of fixes\n- MacSploit is now **FREE** for 4 days file functions have been fixed, leading to a fixed **100% UNC** result\n- Switching to MacSploit from Opiumware is now effortless - no need for hwid resets ANYMORE!\n- MacSploit branding now incorporates the colors of the pride flag for recognition :D\n- New UI Auto Updater works without a VPN now!!"
 }
