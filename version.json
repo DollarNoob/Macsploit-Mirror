@@ -1,8 +1,8 @@
 {
     "clientVersionUpload": "version-d9748b94acff4b5d",
     "appVersion": "vader2",
-    "clientVersion": "munq",
+    "clientVersion": "munq2",
     "relVersion": "726.142",
     "channel": "live",
-    "changelog": "Updated to the latest roblox verison and implemented bug fixes + patches"
+    "changelog": "Updated to the latest roblox verison and implemented bug fixes + patches + InstanceDirectAccess"
 }
