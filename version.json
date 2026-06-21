@@ -1,8 +1,8 @@
 {
-    "clientVersionUpload": "version-b6bc8a3f6c184e6f",
+    "clientVersionUpload": "version-d9748b94acff4b5d",
     "appVersion": "vader2",
-    "clientVersion": "skywalker",
-    "relVersion": "724.145",
+    "clientVersion": "munq",
+    "relVersion": "726.142",
     "channel": "live",
-    "changelog": "Let's Beat Opiumware:\n- Brand new HWID Spoofer that bypasses roblox's hwid checks, and addresses recent ban api changes that aim to use device ids.\n- Fixed second device id check, patched and tested hwid ban bypass!!"
+    "changelog": "Updated to the latest roblox verison and implemented bug fixes + patches"
 }
